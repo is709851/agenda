@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ItemRecordatorios extends StatelessWidget {
+class ItemRecordatorios extends StatefulWidget {
   final String title;
   final String descripcion;
   final int index;
@@ -10,20 +10,26 @@ class ItemRecordatorios extends StatelessWidget {
       : super(key: key);
 
   @override
+  _ItemRecordatoriosState createState() => _ItemRecordatoriosState();
+}
+
+class _ItemRecordatoriosState extends State<ItemRecordatorios> {
+  @override
   Widget build(BuildContext context) {
     return Container(
+      height: 80,
       margin: EdgeInsets.only(top: 10, right: 20),
-      child: Card(
-        elevation: 0.0,
-        margin: EdgeInsets.all(2.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
         color: Colors.white60,
+      ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Expanded(
               child: Container(
                 child: Text(
-                  "$title",
+                  "${widget.title}",
                   style: Theme.of(context).textTheme.title.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -40,7 +46,7 @@ class ItemRecordatorios extends StatelessWidget {
                   bottomRight: Radius.circular(5.0),
                 ),
                 child: Text(
-                  "$descripcion",
+                  "${widget.descripcion}",
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -53,7 +59,6 @@ class ItemRecordatorios extends StatelessWidget {
                 child: Icon(Icons.label_important)),
           ],
         ),
-      ),
     );
   }
 }

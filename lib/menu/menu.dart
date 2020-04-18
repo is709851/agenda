@@ -1,5 +1,6 @@
 import 'package:agenda/alarmas/alarmas.dart';
 import 'package:agenda/calendario/calendario.dart';
+import 'package:agenda/info.dart';
 import 'package:agenda/menu/item_menu.dart';
 import 'package:agenda/notas/notas.dart';
 import 'package:agenda/recordatorios/recordatorios.dart';
@@ -16,7 +17,7 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu> {
 
-  String saludo = 'WELCOME!!';
+  String saludo = 'BIENVENIDO';
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +35,11 @@ class _MenuState extends State<Menu> {
         backgroundColor: Color(0xFF042434),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.info),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => null),
+                MaterialPageRoute(builder: (_) => Info()
+                ),
               );
             },
           )
@@ -48,16 +50,16 @@ class _MenuState extends State<Menu> {
         decoration: BoxDecoration(
           gradient: LinearGradient(colors: [
             const
-            /*Color(0xFFbfddde),
+            Color(0xFFbfddde),
                 Color(0xFF83c3d1),
                 Color(0xFF228693),
                 Color(0xFF075061),
-                Color(0xFF042434),*/
-            Color(0xFFbfddde),
+                Color(0xFF042434),
+            /*Color(0xFFbfddde),
             Color(0xFFFFFD82),
             Color(0xFFFF9B71),
             Color(0xFF55DDFF),
-            Color(0xFFED217C),
+            Color(0xFFED217C),*/
           ], stops: [
             0.0,
             0.1,

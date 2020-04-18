@@ -1,12 +1,12 @@
 import 'package:agenda/menu/side_menu.dart';
-import 'package:agenda/recordatorios/bloc/recordatorios_bloc.dart';
 import 'package:agenda/recordatorios/formRecordatorio.dart';
 import 'package:agenda/recordatorios/item_recordatorios.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Recordatorios extends StatefulWidget {
+import 'bloc/recordatorios_bloc.dart';
 
+class Recordatorios extends StatefulWidget {
 
   Recordatorios({Key key,}) : super(key: key);
 
@@ -16,11 +16,6 @@ class Recordatorios extends StatefulWidget {
 
 class _RecordatoriosState extends State<Recordatorios> {
   RecordatoriosBloc bloc;
-
-  @override
-  void initState(){
-
-  }
 
   @override
   void dispose() {

@@ -99,7 +99,7 @@ class _ItemMenuState extends State<ItemMenu> {
                   children: <Widget>[
                     Container(
                       margin: EdgeInsets.only(left: 10, top: 5),
-                      child: Text('Tarea 1'),
+                      
                     )
                   ],
                 )

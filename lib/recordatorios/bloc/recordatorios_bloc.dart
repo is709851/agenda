@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:agenda/recordatorios/recordatorio.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import '../recordatorio.dart';
 
 part 'recordatorios_event.dart';
 part 'recordatorios_state.dart';
@@ -19,14 +18,11 @@ class RecordatoriosBloc extends Bloc<RecordatoriosEvent, RecordatoriosState> {
 
   @override
   RecordatoriosState get initialState => RecordatoriosInitial();
-    
-  // TODO: implement initialState;
 
   @override
   Stream<RecordatoriosState> mapEventToState(
     RecordatoriosEvent event,
   ) async* {
-    // TODO: implement mapEventToState
     if(event is GetDataEvent){
       bool dataRetrieved = await _getData();
       if (dataRetrieved)
@@ -87,8 +83,9 @@ class RecordatoriosBloc extends Bloc<RecordatoriosEvent, RecordatoriosState> {
   ) async {
     try {
       await _firestoreInstance.collection("recordatorios").document().setData({
-        "titulo": titulo,
         "descripcion": descripcion,
+        "titulo": titulo,
+        
       });
       return true;
     } catch (err) {
