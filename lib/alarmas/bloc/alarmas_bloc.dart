@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:agenda/alarmas/alarma.dart';
+import 'package:agenda/tipos/alarma.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -10,18 +10,19 @@ part 'alarmas_event.dart';
 part 'alarmas_state.dart';
 
 class AlarmasBloc extends Bloc<AlarmasEvent, AlarmasState> {
-  @override
-  AlarmasState get initialState => AlarmasInitial();
+  
   List<Alarma> _alarmaList;
-  List<Alarma> get getRecordatoriosList => _alarmaList;
+  List<Alarma> get getNotasList => _alarmaList;
   final Firestore _firestoreInstance = Firestore.instance;
   List<DocumentSnapshot> _documentsList;
+
+  @override
+  AlarmasState get initialState => AlarmasInitial();
 
   @override
   Stream<AlarmasState> mapEventToState(
     AlarmasEvent event,
   ) async* {
-    // TODO: implement mapEventToState
   if(event is GetDataEvent){
       bool dataRetrieved = await _getData();
       if (dataRetrieved)
@@ -53,6 +54,14 @@ class AlarmasBloc extends Bloc<AlarmasEvent, AlarmasState> {
           errorMessage: "Ha ocurrido un error. Intente borrar mas tarde.",
         );
       }
+    }else if(event is AlarmasMenuEvent){
+       bool dataRetrieved = await _getData();
+      if (dataRetrieved)
+        yield CloudStoreGetData();
+      else
+        yield CloudStoreError(
+          errorMessage: "No se ha podido conseguir datos.",
+        );
     }
   }
 
@@ -63,7 +72,16 @@ class AlarmasBloc extends Bloc<AlarmasEvent, AlarmasState> {
       _alarmaList = alarma.documents
           .map(
             (alarma) => Alarma(
-              hora: alarma["hora"], min: alarma["minutos"]
+              tiempo: alarma["tiempo"], 
+              titulo: alarma["titulo"],
+              lun: alarma["lun"],
+              mar: alarma["mar"],
+              mie: alarma["mie"],
+              jue: alarma["jue"],
+              vie: alarma["vie"],
+              sab: alarma["sab"],
+              dom: alarma["dom"],
+              activada: alarma["activada"]
             ),
           )
           .toList();
@@ -80,9 +98,9 @@ class AlarmasBloc extends Bloc<AlarmasEvent, AlarmasState> {
     int minuto,
   ) async {
     try {
-      await _firestoreInstance.collection("recordatorios").document().setData({
+      await _firestoreInstance.collection("alarmas").document().setData({
         "hora": hora,
-        "minuto": minuto,
+        "min": minuto,
       });
       return true;
     } catch (err) {

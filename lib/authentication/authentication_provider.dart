@@ -1,3 +1,5 @@
+import 'package:agenda/tipos/user.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -15,7 +17,7 @@ class AuthenticationProvider {
     await _auth.signOut();
   }
 
-  Future<void> signInWithGoogle() async {
+  Future signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -25,6 +27,7 @@ class AuthenticationProvider {
     );
     final AuthResult authResult = await _auth.signInWithCredential(credential);
     final FirebaseUser user = authResult.user;
+    
     assert(!user.isAnonymous);
     assert(await user.getIdToken() != null);
 
@@ -36,5 +39,6 @@ class AuthenticationProvider {
     print(">>> googleUserName: ${googleUser.displayName}");
     print(">>> googleUserEmail: ${googleUser.email}");
     print(">>> googleUserPhoto: ${googleUser.photoUrl}");
+    
   }
 }

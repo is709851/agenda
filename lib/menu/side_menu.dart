@@ -24,9 +24,9 @@ class SideMenu extends StatelessWidget {
               )
             ),
             decoration: BoxDecoration(
-              color: Color(0xFF042434),
+              color:  Color(0xFFffd545).withOpacity(0.8),
               image: DecorationImage(
-                image: AssetImage('assets/icon.png'),
+                image: AssetImage('assets/icon2.png'),
                 fit: BoxFit.cover,
               ),
             )

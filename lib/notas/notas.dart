@@ -1,11 +1,16 @@
-import 'package:agenda/notas/bloc/notas_bloc.dart';
+import 'dart:io';
+
 import 'package:agenda/notas/item_nota.dart';
-import 'package:agenda/notas/nota_camera.dart';
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:agenda/menu/side_menu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as Path;
 
+import 'bloc/notas_bloc.dart';
 
 class Notas extends StatefulWidget {
   final CameraDescription camera;
@@ -16,17 +21,29 @@ class Notas extends StatefulWidget {
   _NotasState createState() => _NotasState();
 }
 
-class _NotasState extends State<Notas> {
+class _NotasState extends State<Notas> 
+with AutomaticKeepAliveClientMixin<Notas>{
+  
   NotasBloc bloc;
-  bool _isLoading = false;
+  File _picture;
+  String _uploadedFileUrl;
+  
+  final _formKey = GlobalKey<FormState>();
 
   @override
-  void initState(){
+  bool get wantKeepAlive => true;
+
+  Future getImage() async {
+    _picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    showFoto();
+  }
+
+  @override
+  void initState() {
     super.initState();
   }
 
-
- @override
+  @override
   void dispose() {
     bloc.close();
     super.dispose();
@@ -34,163 +51,237 @@ class _NotasState extends State<Notas> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
-      drawer: SideMenu(),
-      appBar: AppBar(
-        title: Center(
-          child: Text('Notas'),
-        ),
-        backgroundColor: Color(0xFF042434),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              _addNota();
-            },
+        resizeToAvoidBottomPadding: false,
+        drawer: SideMenu(),
+        appBar: AppBar(
+          title: Center(
+            child: Text('Notas'),
           ),
-          IconButton(
-            icon: Icon(Icons.camera_alt),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => NotaCamera()),
-              );
-            },
-          )
-        ],
-      ),
-      body: Container(
-              padding:
-                  EdgeInsets.only(bottom: 10, left: 10, right: 10, top: 10),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  const Color(0xFFbfddde),
-                  Color(0xFF83c3d1),
-                  Color(0xFF228693),
-                  Color(0xFF075061),
-                  Color(0xFF042434),
-                ], stops: [
-                  0.0,
-                  0.1,
-                  0.2,
-                  0.6,
-                  1.0
-                ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-              ),
-              child: BlocProvider(
-        create: (context) {
-          bloc = NotasBloc()..add(GetDataEvent());
-          return bloc;
-        },
-        child: BlocListener<NotasBloc, NotasState>(
-          listener: (context, state) {
-            if (state is CloudStoreRemoved) {
-              Scaffold.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text("Se ha eliminado el elemento."),
-                  ),
-                );
-            } else if (state is CloudStoreError) {
-              Scaffold.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text("${state.errorMessage}"),
-                  ),
-                );
-            } else if (state is CloudStoreSaved) {
-              Scaffold.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text("Se ha guardado el elemento."),
-                  ),
-                );
-            } else if (state is CloudStoreGetData) {
-              Scaffold.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text("Descargando datos..."),
-                  ),
-                );
-            }
-          },
-          child: BlocBuilder<NotasBloc, NotasState>(
-                  builder: (context, state) {
-                if (state is NotasInitial) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return bloc.getNotasList == null ?
-                 Container() : ListView.builder(
-                  itemCount: bloc.getNotasList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ItemNota(
-                      key: UniqueKey(),
-                      index: index,
-                      nota: bloc.getNotasList[index].nota ?? "No hay notas",
-                    );
-                  },
-                );
+          backgroundColor: Color(0xFFff971e).withOpacity(0.6),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                _addNota();
               },
-        )))));
+            ),
+            IconButton(
+              icon: Icon(Icons.camera_alt),
+              onPressed: () {
+                getImage();
+              },
+            )
+          ],
+        ),
+        body: Container(
+            padding: EdgeInsets.only(bottom: 10, left: 10, right: 10, top: 10),
+            child: BlocProvider(
+                create: (context) {
+                  bloc = NotasBloc()..add(GetDataEvent());
+                  return bloc;
+                },
+                child: BlocListener<NotasBloc, NotasState>(
+                    listener: (context, state) {
+                  if (state is CloudStoreRemoved) {
+                    Scaffold.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Text("Nota eliminada"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                  } else if (state is CloudStoreError) {
+                    Scaffold.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Text("${state.errorMessage}"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                  } else if (state is CloudStoreSaved) {
+                    Scaffold.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Text("Nota guardada"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                  } else if (state is CloudStoreGetData) {
+                    Scaffold.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Text("Todas las notas se cargaron"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                  }
+                }, child: BlocBuilder<NotasBloc, NotasState>(
+                  builder: (context, state) {
+                    if (state is NotasInitial) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return bloc.getNotasList == null
+                        ? Center(
+                            child: Text('No tienes notas agregadas'),
+                          )
+                        : ListView.builder(
+                            itemCount: bloc.getNotasList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ItemNota(
+                                key: UniqueKey(),
+                                index: index,
+                                nota: bloc.getNotasList[index].nota ??
+                                    "No hay notas",
+                                titulo: bloc.getNotasList[index].titulo ?? "",
+                                urlImage: bloc.getNotasList[index].image ?? '',
+                              );
+                            },
+                          );
+                  },
+                )))));
   }
 
-TextEditingController nota = new TextEditingController();
-  void _addNota(){
-  showDialog(
-   context: context,
-   builder: (BuildContext context){
-     return AlertDialog( 
-       backgroundColor: Colors.transparent,
-       content: new Column(
-         mainAxisAlignment: MainAxisAlignment.end,
-         children: <Widget>[
-           Container(
-             width: 380,
-             color: Colors.white60,
-            child: IconButton(
-              icon: Icon(Icons.send),
-              onPressed: (){ BlocProvider.of<NotasBloc>(context).add(
-                              SaveDataEvent(
-                                 nota: nota.text),
-                            );
-                            setState(() {
-                              _isLoading = false;
-                            });
-                            Future.delayed(Duration(milliseconds: 1500))
-                                .then((_) {
-                              Navigator.of(context).pop();
-                                });
-                            }
-            ),
-          ),
-          Container(
-            width: 380,
-            color: Colors.white60,
-            child: Center( child: Text('_________________________'),),),
-         Expanded(
-           child: Container(
-           padding: EdgeInsets.all(20),
-         width: 300,
-         height: 450,
-         color: Colors.white60,
-         child: TextField(
-           autofocus: true,
-                        maxLines: 50,
-                        maxLength: 500,
-                        style: TextStyle(fontSize: 16),
-                        
+  TextEditingController nota = new TextEditingController();
+  TextEditingController titulo = new TextEditingController();
+  void _addNota() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              backgroundColor: Color(0xFFffd545).withOpacity(0.9),
+              content: new Form(
+                key: _formKey,
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Row(children: <Widget>[
+                      Expanded(
+                        child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.transparent)),
+                            padding: EdgeInsets.all(10),
+                            child: TextField(
+                              decoration: InputDecoration(labelText: 'Título'),
+                              autofocus: true,
+                              maxLength: 20,
+                              maxLines: 1,
+                              controller: titulo,
+                            )),
+                        flex: 4,
+                      ),
+                      Expanded(
+                        child: Container(
+                          child: IconButton(
+                              icon: Icon(Icons.send),
+                              onPressed: () async {
+                                if (_formKey.currentState.validate()){
+                                  createNota();
+                                  Future.delayed(Duration(milliseconds: 1000))
+                                      .then((_) {
+                                    Navigator.of(context).pop();
+                                  });
+                                  nota.clear();
+                                }
+                              }),
+                        ),
+                      )
+                    ]),
+                    SizedBox(
+                      height: 10,
                     ),
-       ),
-         ),
-         ])
-     );
-   } 
-  );
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(20),
+                        width: 300,
+                        height: 450,
+                        decoration: BoxDecoration(
+                            color: Colors.white60,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Tu nota esta vacía';
+                            }
+                          },
+                          controller: nota,
+                          autofocus: true,
+                          maxLines: 50,
+                          maxLength: 500,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    )
+                  ])
+              )
+            );
+        });
+  }
+
+  void createNota() async {
+
+    await Firestore.instance.collection('notas').document().setData({
+      'nota': nota.text,
+      'titulo': titulo.text,
+      'image': _uploadedFileUrl,
+    });
+  }
+
+  showFoto() async {
+    if (_picture != null) {
+      showDialog(
+          context: context,
+          child: AlertDialog(
+            content: Container(
+              height: 500,
+              child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: FlatButton(
+                        color: Color(0xFFffd545).withOpacity(0.9),
+                        child: Text('Guardar'),
+                        onPressed: (){
+                          saveFoto();
+                          Navigator.of(context).pop();
+                          },
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 20,),
+                Container(
+                  child: Image.file(_picture),
+                )
+              ],
+            ),),
+          ));
+    }
+  }
+
+  Future<void> saveFoto() async {
+    StorageReference reference = FirebaseStorage.instance
+    .ref()
+    .child('images/${Path.basename(_picture.path)}');
+
+    StorageUploadTask uploadTask = reference.putFile(_picture);
+    await uploadTask.onComplete;
+
+   _uploadedFileUrl = _picture.path;
+   /*  reference.getDownloadURL().then((fileUrl){
+      setState((){
+        _uploadedFileUrl = fileUrl;
+      });
+    }); */
+    createNota();
   }
 }
-

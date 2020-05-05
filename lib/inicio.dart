@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'package:android_alarm_manager/android_alarm_manager.dart';
+
 class Inicio extends StatefulWidget {
   Inicio({Key key}) : super(key: key);
 
@@ -14,8 +16,16 @@ class Inicio extends StatefulWidget {
 class _InicioState extends State<Inicio> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController aliasController = TextEditingController();
-  bool hVal = false;
-  bool mVal = false;
+
+  @override
+  void main() async{
+    await AndroidAlarmManager.initialize();
+    await AndroidAlarmManager.periodic(Duration(minutes: 1), 0, callback);
+  }
+
+void callback(){
+  print("I am in the isolate");
+}
 
   @override
   Widget build(BuildContext context) {
@@ -28,126 +38,101 @@ class _InicioState extends State<Inicio> {
           }
         },
         child: Scaffold(
-          backgroundColor: Color(0xFF042434),
+          resizeToAvoidBottomPadding: false,
+            backgroundColor: Color(0xFFffd545).withOpacity(0.9),
             body: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(
-                          top: 50, bottom: 0, left: 70, right: 70),
-                      child: Image.asset('assets/icon.png'),
-                    ),
-                    Container(
-                      width: 300,
-                      padding: EdgeInsets.only(bottom: 20, left: 50, right: 50),
-                      child: Form(
-                          key: _formKey,
-                          child: Column(children: <Widget>[
-                            TextFormField(
-                              autofocus: true,
-                              style: TextStyle(color: Colors.white),
-                              controller: aliasController,
-                              decoration: InputDecoration(
-                                hintText: 'Ingresa un alias',
-                                hintStyle: TextStyle(color: Colors.white),
-                                labelText: 'Alias',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'Por favor, ingresa un alias';
-                                }
-                              },
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  margin:
+                      EdgeInsets.only(top: 50, bottom: 0, left: 70, right: 70),
+                  child: Image.asset('assets/icon2.png'),
+                ),
+                Container(
+                  width: 300,
+                  padding: EdgeInsets.only(bottom: 20, left: 50, right: 50),
+                  child: Form(
+                      key: _formKey,
+                      child: Column(children: <Widget>[
+                        TextFormField(
+                          autofocus: true,
+                          controller: aliasController,
+                          decoration: InputDecoration(
+                            hintText: 'Ingresa un alias',
+                            labelText: 'Alias',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            /*Container( 
-                      margin: EdgeInsets.only(top: 10),
-                      child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          ),
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Por favor, ingresa un alias';
+                            }
+                          },
+                        ),
+                      ])),
+                ),
+                
+                Container(
+                  margin: EdgeInsets.only(top: 20),
+                  height: 50,
+                  width: 200,
+                  child: MaterialButton(
+                    color: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: Row(
                       children: <Widget>[
-                        Text("Hombre", style: TextStyle(color: Colors.white),),
-                          Checkbox(
-                              activeColor:Colors.yellow,
-                              value: hVal,
-                              onChanged: (bool value) {
-                                  setState(() {
-                                      hVal = value;
-                                  });
-                              },
+                        Icon(
+                          FontAwesomeIcons.google,
+                          color: Colors.grey[200],
+                        ),
+                        Expanded(
+                          child: Text(
+                            "Google",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey[200]),
                           ),
-                          Text("Mujer", style: TextStyle(color: Colors.white),),
-                          Checkbox(
-                            activeColor:Colors.yellow,
-                              value: mVal,
-                              onChanged: (bool value) {
-                                  setState(() {
-                                      mVal = value;
-                                  });
-                              },
-                          ),
+                        ),
                       ],
-                    )),*/
-                          ])),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 30),
-                      child: MaterialButton(
-                        color: Color(0xFFFFFFF8),
-                        textColor: Color(0xFF000000),
-                        height: 50,
-                        minWidth: 200,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          side: BorderSide(color: Colors.blue),
-                        ),
-                        child: Text(
-                          'ENTRAR',
-                          style: TextStyle(fontSize: 22),
-                        ),
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => Menu(
-                                        alias: aliasController.text,
-                                      )),
-                            );
-                          }
-                        },
-                      ),
+                    onPressed: () {
+                      BlocProvider.of<AuthenticationBloc>(context)
+                          .add(LoginWithGoogle());
+                    },
+                  ),
+                ),
+
+                Container(
+                  margin: EdgeInsets.only(top: 30),
+                  child: MaterialButton(
+                    color: Color(0xFFFFFFF8),
+                    textColor: Color(0xFF000000),
+                    height: 50,
+                    minWidth: 200,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      
+                      side: BorderSide(color: Color(0xFF6D5B1D)),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20),
-                      height: 50,
-                      width: 200,
-                      child: MaterialButton(
-                        color: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              FontAwesomeIcons.google,
-                              color: Colors.grey[200],
-                            ),
-                            Expanded(
-                              child: Text(
-                                "Google",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.grey[200]),
-                              ),
-                            ),
-                          ],
-                        ),
-                        onPressed: () {
-                          BlocProvider.of<AuthenticationBloc>(context)
-                              .add(LoginWithGoogle());
-                        },
-                      ),
+                    child: Text(
+                      'ENTRAR',
+                      style: TextStyle(fontSize: 22),
                     ),
-                  ],
-                )));
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => Menu(
+                                    //name: aliasController.text,
+                                  )),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            )));
   }
 }

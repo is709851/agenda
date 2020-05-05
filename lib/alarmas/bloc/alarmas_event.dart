@@ -20,6 +20,11 @@ class RemoveDataEvent extends AlarmasEvent{
   List<Object> get props => [index];
 }
 
+class AlarmasMenuEvent extends AlarmasEvent{
+  @override
+  List<Object> get props => [];
+}
+
 class SaveDataEvent extends  AlarmasEvent{
   final int min;
   final int hora;

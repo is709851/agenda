@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-
 import '../authentication_provider.dart';
 
 part 'authentication_event.dart';
@@ -46,6 +45,7 @@ class AuthenticationBloc
         print(err.toString());
         yield AuthenticationError();
       }
-    }
+    } 
   }
+
 }

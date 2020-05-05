@@ -31,3 +31,25 @@ class CloudStoreGetData extends NotasState {
   @override
   List<Object> get props => [];
 }
+
+class PictureChosenState extends NotasState{
+  final File image;
+
+  PictureChosenState({@required this.image});
+  @override
+  List<Object> get props => [image];
+}
+
+class ErrorState extends NotasState {
+  final String message;
+
+  ErrorState({@required this.message});
+  @override
+  List<Object> get props => [message];
+}
+
+class CloudStoreGetDestacadas extends NotasState {
+  @override
+  List<Object> get props => [];
+}
+

@@ -18,6 +18,11 @@ class LoginWithGoogle extends AuthenticationEvent {
   List<Object> get props => null;
 }
 
+class GetUser extends AuthenticationEvent {
+  @override
+  List<Object> get props => null;
+}
+
 class LogOut extends AuthenticationEvent {
   @override
   List<Object> get props => null;
@@ -27,3 +32,5 @@ class VerifyAuthenticatedUser extends AuthenticationEvent {
   @override
   List<Object> get props => null;
 }
+
+

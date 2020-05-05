@@ -31,3 +31,8 @@ class CloudStoreGetData extends RecordatoriosState {
   @override
   List<Object> get props => [];
 }
+
+class CloudStoreGetDestacados extends RecordatoriosState {
+  @override
+  List<Object> get props => [];
+}

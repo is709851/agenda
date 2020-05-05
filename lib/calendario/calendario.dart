@@ -16,32 +16,65 @@ class _CalendarioState extends State<Calendario> {
       drawer: SideMenu(),
       appBar: AppBar(
         title: Center( child: Text('Calendario'),),
-        backgroundColor: Color(0xFF042434),
+        backgroundColor: Color(0xFF009975).withOpacity(0.6),
          
       ),
       body: Container(
+        margin: EdgeInsets.only(top: 15),
         child: Column(
           children:<Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.navigate_before),
-                  onPressed: null,
-                ),
-                IconButton(
-                  icon: Icon(Icons.navigate_next),
-                  onPressed: null,
-                )
-              ],
-            ),
+            
             SfCalendar( //Construcor para el calendario
             view: CalendarView.month, //Seleccion de la vista
             monthViewSettings: MonthViewSettings(showAgenda: true),
             ),
+            Expanded(
+              child: Container(
+                
+              ),
+            )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: (){
+
+        },
       ),
     );
   }
 }
+
+ /*Container(
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Text(
+                        'Fecha inicio:',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                          icon: Icon(Icons.calendar_today),
+                          onPressed: () async {
+                            dateTimeInicial = await showRoundedDatePicker(
+                              context: context,
+                              theme: ThemeData(primarySwatch: Colors.red),
+                            );
+                          }),
+                      Text(
+                        'Fecha fin:',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                          icon: Icon(Icons.calendar_today),
+                          onPressed: () async {
+                            dateTimeFinal = await showRoundedDatePicker(
+                              context: context,
+                              theme: ThemeData(primarySwatch: Colors.red),
+                            );
+                          })
+                    ],
+                  ),
+                ),*/
