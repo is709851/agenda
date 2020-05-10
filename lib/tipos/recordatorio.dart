@@ -10,8 +10,11 @@ class Recordatorio {
   final bool vie;
   final bool sab;
   final bool dom;
-  final bool destacado;
-  int hora;
+  DateTime hora;
+  String cada;
+  String mhmd;
+  
+  
 
   Recordatorio(
       {@required this.titulo,
@@ -23,6 +26,5 @@ class Recordatorio {
       this.vie,
       this.sab,
       this.dom,
-      this.hora,
-      this.destacado});
+      this.hora,});
 }

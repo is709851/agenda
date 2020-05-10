@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 
+
 class Inicio extends StatefulWidget {
   Inicio({Key key}) : super(key: key);
 
@@ -14,6 +15,7 @@ class Inicio extends StatefulWidget {
 }
 
 class _InicioState extends State<Inicio> {
+
   final _formKey = GlobalKey<FormState>();
   TextEditingController aliasController = TextEditingController();
 
@@ -45,7 +47,7 @@ void callback(){
               children: <Widget>[
                 Container(
                   margin:
-                      EdgeInsets.only(top: 50, bottom: 0, left: 70, right: 70),
+                      EdgeInsets.only(top: 50, bottom: 0, left: 50, right: 50),
                   child: Image.asset('assets/icon2.png'),
                 ),
                 Container(
@@ -56,6 +58,8 @@ void callback(){
                       child: Column(children: <Widget>[
                         TextFormField(
                           autofocus: true,
+                          maxLength: 10,
+                          maxLines: 1,
                           controller: aliasController,
                           decoration: InputDecoration(
                             hintText: 'Ingresa un alias',
@@ -92,7 +96,7 @@ void callback(){
                           child: Text(
                             "Google",
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey[200]),
+                            style: TextStyle(color: Colors.grey[200], fontSize: 20),
                           ),
                         ),
                       ],
@@ -105,7 +109,7 @@ void callback(){
                 ),
 
                 Container(
-                  margin: EdgeInsets.only(top: 30),
+                  margin: EdgeInsets.only(top: 10),
                   child: MaterialButton(
                     color: Color(0xFFFFFFF8),
                     textColor: Color(0xFF000000),
@@ -113,8 +117,6 @@ void callback(){
                     minWidth: 200,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
-                      
-                      side: BorderSide(color: Color(0xFF6D5B1D)),
                     ),
                     child: Text(
                       'ENTRAR',
@@ -125,7 +127,6 @@ void callback(){
                         Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (context) => Menu(
-                                    //name: aliasController.text,
                                   )),
                         );
                       }
@@ -135,4 +136,6 @@ void callback(){
               ],
             )));
   }
+
+ 
 }

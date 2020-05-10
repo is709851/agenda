@@ -25,6 +25,16 @@ class RemoveDataEvent extends RecordatoriosEvent{
   List<Object> get props => [index];
 }
 
+class EditDataEvent extends RecordatoriosEvent{
+  final int index;
+
+  EditDataEvent({
+    @required this.index,
+  });
+  @override
+  List<Object> get props => [index];
+}
+
 class DeleteImportanteEvent extends RecordatoriosEvent{
   final int index;
 

@@ -1,15 +1,27 @@
-import 'package:agenda/recordatorios/bloc/recordatorios_bloc.dart';
+import 'package:agenda/recordatorios/edit_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'bloc/recordatorios_bloc.dart';
+
 class ItemRecordatorios extends StatefulWidget {
   final String title;
   final String descripcion;
+  final bool lunEdit;
+  final bool marEdit;
+  final bool mieEdit;
+  final bool jueEdit;
+  final bool vieEdit;
+  final bool sabEdit;
+  final bool domEdit;
+  final String cadaEdit;
+  final String mhdmEdit;
+  final DateTime horaEdit;
   final int index;
 
   ItemRecordatorios(
-      {Key key, @required this.title, this.index, this.descripcion})
+      {Key key, @required this.title, this.index, this.descripcion, this.lunEdit, this.marEdit, this.mieEdit, this.jueEdit, this.vieEdit, this.sabEdit, this.domEdit, this.cadaEdit, this.mhdmEdit, this.horaEdit})
       : super(key: key);
 
   @override
@@ -17,23 +29,15 @@ class ItemRecordatorios extends StatefulWidget {
 }
 
 class _ItemRecordatoriosState extends State<ItemRecordatorios> {
-  bool importante = false;
-  
+  bool importante;
   final _iconKey = GlobalKey<FormState>();
 
+  RecordatoriosBloc bloc;
 
   @override
   void initState() {
+    importante = false;
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    if(importante == false){
-      importante = !importante;
-    }
-
-    super.didChangeDependencies();
   }
 
   @override
@@ -58,14 +62,14 @@ class _ItemRecordatoriosState extends State<ItemRecordatorios> {
                 onPressed: () async {
                   setState(() {
                     importante = !importante;
-                    /* if (importante == true) {
+                    if (importante == true) {
                       _addImportante();
-                    } else if(importante == false){
+                    } else if (importante == false) {
                       BlocProvider.of<RecordatoriosBloc>(context)
                           .add(DeleteImportanteEvent(
                         index: widget.index,
                       ));
-                    } */
+                    }
                   });
                 },
               )),
@@ -111,7 +115,25 @@ class _ItemRecordatoriosState extends State<ItemRecordatorios> {
                   height: 25,
                   child: IconButton(
                     icon: Icon(Icons.edit),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push( MaterialPageRoute(
+                                  builder: (context) => EditForm(
+                        tituloEdit: widget.title,
+                        descripcionEdit: widget.descripcion,
+                        index: widget.index,
+                        lunEdit: widget.lunEdit,
+                        marEdit: widget.marEdit,
+                        mieEdit: widget.marEdit,
+                        jueEdit: widget.jueEdit,
+                        vieEdit: widget.vieEdit,
+                        sabEdit: widget.sabEdit,
+                        domEdit: widget.domEdit,
+                        cadaEdit: widget.cadaEdit,
+                        horaEdit: widget.horaEdit,
+                        mhdmEdit: widget.mhdmEdit,
+                      
+                      )));
+                    },
                   )),
               Container(
                   height: 25,

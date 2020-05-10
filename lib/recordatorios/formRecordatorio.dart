@@ -64,7 +64,7 @@ class _FormRecordatorioState extends State<FormRecordatorio> {
                       key: _formKey,
                       child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text(
                   'Título:',
@@ -182,12 +182,6 @@ class _FormRecordatorioState extends State<FormRecordatorio> {
                     ),
                   ],
                 ),
-                Expanded(
-                  child: SizedBox(
-                    height: 0,
-                  ),
-                  flex: 1,
-                ),
                 Container(
                   height: 60,
                   color: Color(0xFF101113),
@@ -202,11 +196,11 @@ class _FormRecordatorioState extends State<FormRecordatorio> {
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               createRecord();
-                            Future.delayed(Duration(milliseconds: 1500))
+                            
+                            }Future.delayed(Duration(milliseconds: 1500))
                                 .then((_) {
                               Navigator.of(context).pop();
                             });
-                            }
                             // _showNotificationWithSound();
                           }),
                       flex: 1,

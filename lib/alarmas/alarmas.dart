@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:agenda/alarmas/form_alarmas.dart';
 import 'package:agenda/alarmas/item_alarma.dart';
-import 'package:agenda/menu/side_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -39,7 +38,6 @@ with AutomaticKeepAliveClientMixin<Alarmas>{
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        drawer: SideMenu(),
         appBar: AppBar(
           title: Center(
             child: Text('Alarmas'),
@@ -71,6 +69,7 @@ with AutomaticKeepAliveClientMixin<Alarmas>{
                     ..showSnackBar(
                       SnackBar(
                         content: Text("Se ha eliminado el elemento."),
+                        duration: Duration(seconds: 1),
                       ),
                     );
                 } else if (state is CloudStoreError) {
@@ -79,6 +78,7 @@ with AutomaticKeepAliveClientMixin<Alarmas>{
                     ..showSnackBar(
                       SnackBar(
                         content: Text("${state.errorMessage}"),
+                        duration: Duration(seconds: 1),
                       ),
                     );
                 } else if (state is CloudStoreSaved) {
@@ -87,6 +87,7 @@ with AutomaticKeepAliveClientMixin<Alarmas>{
                     ..showSnackBar(
                       SnackBar(
                         content: Text("Se ha guardado el elemento."),
+                        duration: Duration(seconds: 1),
                       ),
                     );
                 } else if (state is CloudStoreGetData) {
@@ -94,7 +95,8 @@ with AutomaticKeepAliveClientMixin<Alarmas>{
                     ..hideCurrentSnackBar()
                     ..showSnackBar(
                       SnackBar(
-                        content: Text("Descargando datos..."),
+                        content: Text("Todas las alarmas estan listas"),
+                        duration: Duration(seconds: 2),
                       ),
                     );
                 }

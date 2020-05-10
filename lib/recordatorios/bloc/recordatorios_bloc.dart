@@ -71,12 +71,13 @@ class RecordatoriosBloc extends Bloc<RecordatoriosEvent, RecordatoriosState> {
         await _documentsList[event.index].reference.delete();
         _documentsList.removeAt(event.index);
         _listImportante.removeAt(event.index);
-        //yield CloudStoreRemoved();
       } catch (err) {
         yield CloudStoreError(
           errorMessage: "Ha ocurrido un error.",
         );
       }
+    }else if(event is EditDataEvent){
+
     } 
   }
 

@@ -25,7 +25,6 @@ dependencies:
   cupertino_icons: ^0.1.2
   table_calendar: ^2.2.3
   flutter_rounded_date_picker: ^1.0.0
-  syncfusion_flutter_calendar: ^17.4.40-beta
   flutter_bloc: ^3.2.0
   image_picker: ^0.6.3+4
   font_awesome_flutter: ^8.7.0
@@ -43,6 +42,7 @@ dependencies:
   shared_preferences: ^0.5.6+3
   android_alarm_manager: ^0.4.5+9
   camera: ^0.5.7+4
+  video_player: ^0.10.10
 
   flutter_mailer: ^0.4.1+1
   datetime_picker_formfield: ^1.0.0
@@ -76,6 +76,7 @@ flutter:
      - assets/icon2.png
      - assets/logo.jpg
      - assets/logo2.jpg
+     - assets/Agenda.mp4
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 

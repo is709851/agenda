@@ -18,8 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home:
-        BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           if (state is AuthenticatedSuccessfully) return Menu();
           if (state is UnAuthenticated) return Inicio();

@@ -5,7 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:agenda/menu/side_menu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as Path;
@@ -54,7 +53,6 @@ with AutomaticKeepAliveClientMixin<Notas>{
     super.build(context);
     return Scaffold(
         resizeToAvoidBottomPadding: false,
-        drawer: SideMenu(),
         appBar: AppBar(
           title: Center(
             child: Text('Notas'),

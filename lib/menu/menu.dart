@@ -1,50 +1,83 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
+import 'package:agenda/calendario/bloc/calendario_bloc.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:agenda/alarmas/alarmas.dart';
 import 'package:agenda/calendario/calendario.dart';
-import 'package:agenda/info.dart';
 import 'package:agenda/menu/items/item_menu_recordatorio.dart';
 import 'package:agenda/notas/notas.dart';
 import 'package:agenda/recordatorios/recordatorios.dart';
 import 'package:flutter/material.dart';
-import 'package:agenda/tipos/user.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:video_player/video_player.dart';
 
 //Items de las ventanas del menu
 import 'package:agenda/menu/items/item_menu_alarma.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:agenda/recordatorios/bloc/recordatorios_bloc.dart';
 import 'package:agenda/alarmas/bloc/alarmas_bloc.dart';
 import 'package:agenda/notas/bloc/notas_bloc.dart';
 
+import 'items/item_menu_calendario.dart';
 import 'items/item_menu_nota.dart';
 
+//Notificaciones
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class Menu extends StatefulWidget {
-  final User user;
   final String name;
 
-  Menu({Key key, this.name, this.user}) : super(key: key);
+  Menu({Key key, this.name}) : super(key: key);
 
   @override
   _MenuState createState() => _MenuState();
 }
 
 class _MenuState extends State<Menu> {
-  String saludo = 'BIENVENIDO';
+  var saludos = [
+    '¿Qué vamos a hacer hoy?',
+    'Hoy tendremos un día grandioso',
+    'Empecemos!',
+    '¿Qué novedades tendremos hoy?',
+    'Nos esperan varias cosas por hacer'
+  ];
+  int cont = 0;
+  int rdm = 0;
   RecordatoriosBloc bloc;
   AlarmasBloc blocA;
   NotasBloc blocN;
+  CalendarioBloc blocC;
 
+  //VideoPlayerController _videoPlayer;
 
- //Notificaciones
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  // Función para mostrar mensajes aleatorios
+  final hoyH = DateTime.now().hour;
+  final hoyM = DateTime.now().minute;
+  void mnsjAleatorios() {
+    if (cont <= saludos.length && hoyH == 03 && 00 == hoyM) {
+      cont++;
+      rdm = Random().nextInt(saludos.length);
+    } else {
+      cont = 0;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    mnsjAleatorios();
+
+    /*    _videoPlayer = VideoPlayerController.asset('assets/Agenda.mp4');
+    _videoPlayer.addListener((){
+      setState((){});
+    });
+
+    _videoPlayer.setLooping(true);
+    _videoPlayer.initialize().then((_) => setState((){}));
+    _videoPlayer.play(); */
 
     var initializationSettingsAndroid =
         new AndroidInitializationSettings('icon.png');
@@ -64,6 +97,9 @@ class _MenuState extends State<Menu> {
     bloc.close();
     blocA.close();
     blocN.close();
+    blocC.close();
+    /* 
+    _videoPlayer.dispose(); */
     super.dispose();
   }
 
@@ -82,13 +118,12 @@ class _MenuState extends State<Menu> {
         backgroundColor: Color(0xFFffd545).withOpacity(0.8),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.info),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => Info()),
-              );
-            },
-          )
+              icon: Icon(Icons.info),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => Video()),
+                );
+              })
         ],
       ),
       body: Container(
@@ -131,7 +166,7 @@ class _MenuState extends State<Menu> {
                   style: TextStyle(color: Colors.black, fontSize: 22),
                 ),
                 Text(
-                  'Elieth' ?? '',
+                  'Francis Macias' ?? widget.name,
                   style: TextStyle(color: Colors.black, fontSize: 22),
                 )
               ],
@@ -144,11 +179,11 @@ class _MenuState extends State<Menu> {
                   text: TextSpan(
                     children: <TextSpan>[
                       TextSpan(
-                        text: saludo.toString() + '\n',
+                        text: 'Bienvenido \n',
                         style: TextStyle(color: Colors.black, fontSize: 14),
                       ),
                       TextSpan(
-                          text: ' ¿Qué vamos a hacer hoy?',
+                          text: saludos[rdm].toString() ?? '',
                           style: TextStyle(color: Colors.black, fontSize: 14)),
                     ],
                   ),
@@ -235,7 +270,9 @@ class _MenuState extends State<Menu> {
                                                         CircularProgressIndicator(),
                                                   );
                                                 }
-                                                return bloc.getImportanteList.length > 0
+                                                return bloc.getImportanteList
+                                                            .length >
+                                                        0
                                                     ? ListView.builder(
                                                         itemCount: bloc
                                                             .getImportanteList
@@ -364,7 +401,9 @@ class _MenuState extends State<Menu> {
                                                             CircularProgressIndicator(),
                                                       );
                                                     }
-                                                    return blocN.getImportantesList.length > 0
+                                                    return blocN.getImportantesList
+                                                                .length >
+                                                            0
                                                         ? ListView.builder(
                                                             itemCount: blocN
                                                                 .getImportantesList
@@ -459,58 +498,76 @@ class _MenuState extends State<Menu> {
                                     ),
                                   ),
                                   Expanded(
-                                      child: Container(
-                                          margin:
-                                              EdgeInsets.only(left: 10, top: 5),
-                                          child: BlocProvider(
+                                    child: Container(
+                                        margin:
+                                            EdgeInsets.only(left: 10, top: 5),
+                                        child: BlocProvider(
                                             create: (context) {
-                                              return bloc;
+                                              blocC = CalendarioBloc()
+                                                ..add(GetDataCEvent());
+                                              return blocC;
                                             },
-                                            child: BlocBuilder<
-                                                RecordatoriosBloc,
-                                                RecordatoriosState>(
-                                              builder: (context, state) {
+                                            child: BlocListener<CalendarioBloc,
+                                                CalendarioState>(
+                                              listener: (context, state) {
                                                 if (state
-                                                    is RecordatoriosInitial) {
-                                                  return Center(
-                                                    child:
-                                                        CircularProgressIndicator(),
-                                                  );
+                                                    is CloudStoreGetCData) {
+                                                  Scaffold.of(context)
+                                                    ..hideCurrentSnackBar()
+                                                    ..showSnackBar(
+                                                      SnackBar(
+                                                        content:
+                                                            Text("Todo listo"),
+                                                        duration: Duration(
+                                                            seconds: 1),
+                                                      ),
+                                                    );
                                                 }
-                                                return /* bloc.getImportanteList !=
-                                                        null
-                                                    ? ListView.builder(
-                                                        itemCount: bloc
-                                                            .getImportanteList
-                                                            .length,
-                                                        itemBuilder:
-                                                            (BuildContext
-                                                                    context,
-                                                                int index) {
-                                                          return ItemRecordatorios(
-                                                            key: UniqueKey(),
-                                                            index: index,
-                                                            title: bloc
-                                                                    .getImportanteList[
-                                                                        index]
-                                                                    .titulo ??
-                                                                "No title",
-                                                            descripcion: bloc
-                                                                    .getImportanteList[
-                                                                        index]
-                                                                    .descripcion ??
-                                                                "No descripcion",
-                                                          );
-                                                        },
-                                                      )
-                                                    : */
-                                                    Center(
-                                                        child: Text(
-                                                  "Sin eventos para hoy",
-                                                ));
                                               },
-                                            ),
-                                          ))),
+                                              child: BlocBuilder<CalendarioBloc,
+                                                  CalendarioState>(
+                                                builder: (context, state) {
+                                                  if (state
+                                                      is CalendarioInitial) {
+                                                    return Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    );
+                                                  }
+                                                  return blocC.getEventosList !=
+                                                          null
+                                                      ? ListView.builder(
+                                                          itemCount: blocC
+                                                              .getEventosList
+                                                              .length,
+                                                          itemBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  int index) {
+                                                            return ItemCMEvento(
+                                                              key: UniqueKey(),
+                                                              index: index,
+                                                              titulo: blocC
+                                                                      .getEventosList[
+                                                                          index]
+                                                                      .titulo ??
+                                                                  'Sin titulo',
+                                                              descripcion: blocC
+                                                                      .getEventosList[
+                                                                          index]
+                                                                      .descripcion ??
+                                                                  'No descripcion',
+                                                            );
+                                                          },
+                                                        )
+                                                      : Center(
+                                                          child: Text(
+                                                              'sin eventos'),
+                                                        );
+                                                },
+                                              ),
+                                            ))),
+                                  ),
                                   Container(
                                     margin: EdgeInsets.only(left: 15),
                                     width: 300,
@@ -569,7 +626,7 @@ class _MenuState extends State<Menu> {
                                         Icons.view_agenda,
                                         color: Color(0xFF042434),
                                       ),
-                                      onPressed: null,
+                                      onPressed: _showNotification,
                                     ),
                                   ),
                                   Expanded(
@@ -659,19 +716,19 @@ class _MenuState extends State<Menu> {
   }
 
   Future _showNotification() async {
-     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'your channel id', 'your channel name', 'your channel description',
-      importance: Importance.Max, priority: Priority.High);
-  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-  var platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.show(
-    0,
-    'New Post',
-    'How to Show Notification in Flutter',
-    platformChannelSpecifics,
-    payload: 'Default_Sound',
-  );
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'New Post',
+      'How to Show Notification in Flutter',
+      platformChannelSpecifics,
+      payload: 'Default_Sound',
+    );
   }
 
   Future onSelectNotification(String payload) async {
@@ -680,5 +737,44 @@ class _MenuState extends State<Menu> {
         builder: (_) => new AlertDialog(
             title: const Text("Here is"),
             content: new Text("Payload: $payload")));
+  }
+}
+
+class Video extends StatefulWidget {
+  Video({Key key}) : super(key: key);
+
+  @override
+  _VideoState createState() => _VideoState();
+}
+
+class _VideoState extends State<Video> {
+  VideoPlayerController _videoPlayer;
+  @override
+  void initState() {
+    super.initState();
+
+    _videoPlayer = VideoPlayerController.asset('assets/Agenda.mp4')
+      ..initialize().then((_) {
+        setState(() {});
+      });
+    _videoPlayer.play();
+    _videoPlayer.setLooping(true);
+  }
+
+  @override
+  void dispose() {
+    _videoPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: _videoPlayer.value.initialized
+            ? AspectRatio(
+                aspectRatio: _videoPlayer.value.aspectRatio,
+                child: VideoPlayer(_videoPlayer),
+              )
+            : Container());
   }
 }
